@@ -1,0 +1,47 @@
+{
+  "name": "dealz360",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Anil Patidar",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "cloudinary": "^1.30.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-fileupload": "^1.4.0",
+    "formidable": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^10.1.0",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "i": "^0.3.7",
+    "install": "^0.13.0",
+    "jimp": "^0.16.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
+    "mongoose": "^6.3.5",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.7.5",
+    "nodemon": "^2.0.16",
+    "npm": "^8.12.1",
+    "path": "^0.12.7",
+    "qrcode": "^1.5.1",
+    "qrcode-reader": "^1.0.4"
+  },
+  "engines": {
+    "node": "16.x",
+    "npm": "8.15.0"
+  }
+}
