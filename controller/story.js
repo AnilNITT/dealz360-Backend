@@ -5,6 +5,7 @@ const cloudinary = require("cloudinary");
 
 // Add Story
 async function AddStory(req,res){
+  try{
         const data = jwt_decode(req.headers.token);
         const user_id = data.user_id;
     
@@ -17,13 +18,17 @@ async function AddStory(req,res){
               };
             return res.status(201).send(response);
         }
-        if(req.files.length ===0){
+
+        if(req.files.length ===0)
+        {
           var response = {
               status: 201,
               message: "Select a story Image/Video file",
             };
           return res.status(201).send(response);
         }
+
+
         const { caption} = req.body;
 
         //console.log(req.files);
@@ -44,7 +49,8 @@ async function AddStory(req,res){
                 caption: caption,
                 images: img,
                 user: user_id,
-                storytype:"image"
+                storytype:"image",
+                type:req.body.type
             };
 
             const story = await Story.create(newPostData);
@@ -78,8 +84,8 @@ async function AddStory(req,res){
                   caption: caption,
                   images: img,
                   user: user_id,
-                  storytype:"video"
-
+                  storytype:"video",
+                  type:req.body.type
               };
   
               const story = await Story.create(newPostData);
@@ -93,7 +99,15 @@ async function AddStory(req,res){
               };
               return res.status(200).send(response);
         }
+    } catch (error) {
+        response = {
+          errors:error,
+          status: 400,
+          message: "Operation was not successful",
+        };
     
+        return res.status(400).send(response);
+    }
 }
 
 // get all user Story
@@ -338,46 +352,278 @@ async function GetFollowingStory(req,res){
         {"$match" : {"createdAt":{"$gt":new Date(Date.now() - 24*60*60 * 1000)}}},
         {"$sort":{"createdAt":-1,"user":1,}},
       ]);
+
       
       //await User.populate(story,{path: "user",select: ['name','username', 'email','images']})
       if(user.following.length>0){
       if(story && story.length>0){
-        let jkl = [];
-        let mno = [];
-        let arr = [];
         let abc = [];
+        let jkl = [];
+        let ooo = [];
+        let ddd = [];
+
+        
+        let arr = [];
         let count = 0;
         const lengt = story.length;
+
         story.forEach(async(data)=>{
-          if(user.following.includes(data.user)){
-            if(!abc.includes(data.user.toString())){
+          
+          let mno = [];
+          let mnos = [];
+          let mnoss = [];
+          let flag = false;
+
+          if(user.following.includes(data.user))
+          {
+            if(!abc.includes(data.user.toString()))
+            {
+
               abc.push(data.user.toString())
+
+              // Make All story
               const dataz = {
                 user : data.user,
                 story : mno,
               }
-              jkl.push(dataz)
-              console.log(jkl);
-              //console.log(abc);
-              story.forEach(async(datas)=>{
-                if(data.user.toString()===datas.user.toString()){
-                  jkl[0].story.push(datas)
-                  arr.push(datas)
-                  count++;
+              jkl.push(dataz);
+
+              // Make Offers story
+              const datazz = {
+                user : data.user,
+                story : mnos,
+              }
+              ooo.push(datazz);
+
+              // make Discount story
+              const datazzz = {
+                user : data.user,
+                story : mnoss,
+              }
+
+              ddd.push(datazzz);
+              
+              let jkl_length = jkl.length
+              let ooo_length = ooo.length
+              let ddd_length = ddd.length
+              // console.log(ooo);
+              // console.log(jkl);
+              // console.log(abc);
+              story.forEach(async(datas)=>
+              {
+                if(data.user.toString() === datas.user.toString())
+                { 
+                      // console.log(datas);
+                        if(datas.type === "offer")
+                        {
+                          // Add offer story
+                            ooo[ooo_length-1].story.push(datas)
+                        }
+                        if(datas.type === "discount")
+                        {
+                          // Add discount story
+                            ddd[ddd_length-1].story.push(datas)
+                        }
+
+                      jkl[jkl_length-1].story.push(datas)
+                      // arr.push(datas)
+                      count++;
+                      flag=true;
                 }
               })
-          }
+            }
           } else {
             count++;
+            flag=true;
           }
-          if(count===lengt){
+          
+          if(count===lengt && flag === true){
                 await User.populate(jkl,{path: "user",select: ['name','username', 'email','images']})
+                await User.populate(ooo,{path: "user",select: ['name','username', 'email','images']})
+                await User.populate(ddd,{path: "user",select: ['name','username', 'email','images']})
                 
+                let f_array = [];
+
+                f_array.push({story:jkl})
+                f_array.push({offer:ooo})
+                f_array.push({discount:ddd})
+                // console.log(f_array[0].story);
+                // f_array.push(jkl)
+                // f_array.push(ooo)
+                // f_array.push(ddd)
+
                 var response = {
                     status: 200,
                     message: 'successfull',
                     //data: arr,
-                    data:jkl
+                    // data: f_array,
+                    // offer:ooo,
+                    // discount:ddd,
+                    data:jkl,
+                  };
+                return res.status(200).send(response);
+          }
+        })
+      } else{
+          var response = {
+              status: 201,
+              message: "No Story Found",
+            };
+          return res.status(201).send(response);
+      }
+    } else{
+      var response = {
+          status: 201,
+          message: "No Story Found",
+        };
+      return res.status(201).send(response);
+      }
+  } catch (error) {
+      response = {
+        errors:error,
+        status: 400,
+        message: "Operation was not successful",
+      };
+  
+      return res.status(400).send(response);
+  }
+}
+
+// Get Following user Discount Story
+async function GetDiscountStory(req,res){
+  try{
+
+    const data = jwt_decode(req.headers.token);
+    const user_id = data.user_id;
+    //console.log(user_id);
+
+    const user = await User.findById(user_id);
+
+    if(!user) {
+      var response = {
+        status: 201,
+        message: "No User Found... Login First",
+      };
+      return res.status(201).send(response);
+    }
+      // const story = await Story.find(req.query).populate({path:"user",select: ['email','username','images']})
+      //                                          .populate({path:"seen_by",select: ['email','username','images']})
+      //                                          .sort({createdAt: -1})
+      
+      const story = await Story.aggregate([
+        {"$match" : {type: {
+          $in: ['offer', 'discount']
+      }}},
+        {"$sort":{"createdAt":-1,"user":1,}},
+      ]);
+
+      
+      //await User.populate(story,{path: "user",select: ['name','username', 'email','images']})
+      if(user.following.length>0){
+      if(story && story.length>0){
+        let abc = [];
+        let jkl = [];
+        let ooo = [];
+        let ddd = [];
+
+        
+        let arr = [];
+        let count = 0;
+        const lengt = story.length;
+
+        story.forEach(async(data)=>{
+          
+          let mno = [];
+          let mnos = [];
+          let mnoss = [];
+          let flag = false;
+
+          if(user.following.includes(data.user))
+          {
+            if(!abc.includes(data.user.toString()))
+            {
+
+              abc.push(data.user.toString())
+
+              // Make All story
+              const dataz = {
+                user : data.user,
+                story : mno,
+              }
+              jkl.push(dataz);
+
+              // Make Offers story
+              const datazz = {
+                user : data.user,
+                story : mnos,
+              }
+              ooo.push(datazz);
+
+              // make Discount story
+              const datazzz = {
+                user : data.user,
+                story : mnoss,
+              }
+
+              ddd.push(datazzz);
+              
+              let jkl_length = jkl.length
+              let ooo_length = ooo.length
+              let ddd_length = ddd.length
+              // console.log(ooo);
+              // console.log(jkl);
+              // console.log(abc);
+              story.forEach(async(datas)=>
+              {
+                if(data.user.toString() === datas.user.toString())
+                { 
+                      // console.log(datas);
+                        if(datas.type === "offer")
+                        {
+                          // Add offer story
+                            ooo[ooo_length-1].story.push(datas)
+                        }
+                        if(datas.type === "discount")
+                        {
+                          // Add discount story
+                            ddd[ddd_length-1].story.push(datas)
+                        }
+
+                      jkl[jkl_length-1].story.push(datas)
+                      // arr.push(datas)
+                      count++;
+                      flag=true;
+                }
+              })
+            }
+          } else {
+            count++;
+            flag=true;
+          }
+          
+          if(count===lengt && flag === true){
+                await User.populate(jkl,{path: "user",select: ['name','username', 'email','images']})
+                await User.populate(ooo,{path: "user",select: ['name','username', 'email','images']})
+                await User.populate(ddd,{path: "user",select: ['name','username', 'email','images']})
+                
+                let f_array = [];
+
+                // f_array.push({story:jkl})
+                f_array.push({offer:ooo})
+                f_array.push({discount:ddd})
+                // console.log(f_array[0].story);
+                // f_array.push(jkl)
+                // f_array.push(ooo)
+                // f_array.push(ddd)
+
+                var response = {
+                    status: 200,
+                    message: 'successfull',
+                    //data: arr,
+                    data: f_array,
+                    // offer:ooo,
+                    // discount:ddd,
+                    // data:jkl,
                   };
                 return res.status(200).send(response);
           }
@@ -524,6 +770,7 @@ module.exports = {
     GetFollowingStory,
     GetUserStory,
     GetHighlightStory,
+    GetDiscountStory,
 }
 
 

@@ -7,6 +7,7 @@ const { AddStory,
         GetFollowingStory,
         GetUserStory,
         GetHighlightStory,
+        GetDiscountStory,
         } = require("../controller/story");
 
 var multer = require('multer');
@@ -48,6 +49,9 @@ router.put("/update/:id",UpdateStory);
 
 // Only Following user Story
 router.get("/getallfollowing",GetFollowingStory);
+
+// Only Discount Following user Story
+router.get("/getalldiscount",GetDiscountStory);
 
 // Single User story
 router.get("/mystory",GetUserStory);

@@ -135,6 +135,7 @@ const jimp = require('jimp');
 //   // }
 // }
 
+
 async function Usersignup(req, res) {
   try{
   const { email, password, role } = req.body;
@@ -1012,6 +1013,17 @@ async function Following(req, res) {
       return res.status(201).send(response);
     }
 
+    // Can't Follow urself
+    if(user_id.toString() === user._id.toString())
+    {
+      var response = {
+        status: 201,
+        message: "U can not Follow urself",
+      };
+      return res.status(201).send(response);
+    }
+
+
     const users = await User.findById(user_id);
 
     if (users) {
@@ -1551,6 +1563,7 @@ async function QrCode(req,res){
       // console.log(url)
       // console.log(qr.decode("url"))
       const canvas = createCanvas(width, width);
+      
       QRCode.toCanvas(
         canvas,
         url,
