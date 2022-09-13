@@ -20,6 +20,8 @@ const {
     UpdateRole,
     QrCode,
     QrCodeRead,
+    DelUser,
+    GetMutualFollowingUser,
     } = require("../controller/user");
 
 
@@ -98,5 +100,9 @@ router.patch("/updaterole",verifyToken,UpdateRole);
 router.post("/qrcode",QrCode);
 router.post("/qrcoderead",uploads.array("images",10),QrCodeRead);
 
-QrCode
-module.exports = router
+router.delete("/deleteuser/:id",verifyToken,DelUser);
+
+// Mutual Following
+router.get("/mutualfollowed/:id",verifyToken,GetMutualFollowingUser);
+
+module.exports = router;

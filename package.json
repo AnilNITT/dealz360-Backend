@@ -38,6 +38,7 @@
     "nodemon": "^2.0.16",
     "npm": "^8.12.1",
     "path": "^0.12.7",
+    "qr-code-styling": "^1.6.0-rc.1",
     "qrcode": "^1.5.1",
     "qrcode-reader": "^1.0.4"
   },

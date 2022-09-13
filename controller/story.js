@@ -181,6 +181,13 @@ async function GetStory(req,res){
 
         const story = await Story.findById(req.params.id).populate({path:"user",select: ['email','username','images']})
                                                          .populate({path:"seen_by",select: ['email','username','images']});
+        if(!story){
+          var response = {
+            status: 201,
+            message: "No Story Found",
+          };
+        return res.status(201).send(response);
+        }
 
         const user = await User.findById(story.user._id);
 
@@ -198,27 +205,20 @@ async function GetStory(req,res){
                     count =1;
                   }
             })
-            console.log(count);
+            // console.log(count);
             if(count ==0){
               story.seen_by.push(user_id)
               story.save();
             }
           }
         }
-        if(story){
-            var response = {
+
+        var response = {
                 status: 200,
                 message: 'successfull',
                 data: story,
               };
-              return res.status(200).send(response);
-        } else{
-            var response = {
-                status: 201,
-                message: "No Story Found",
-              };
-            return res.status(201).send(response);
-        }
+        return res.status(200).send(response);
 
     } catch (error) {
         response = {
