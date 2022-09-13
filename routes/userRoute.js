@@ -18,9 +18,9 @@ const {
     GetRecommendedUser,
     Rating,
     UpdateRole,
-    QrCode,
-    QrCodeRead,
-    DelUser,
+    // QrCode,
+    // QrCodeRead,
+    // DelUser,
     GetMutualFollowingUser,
     } = require("../controller/user");
 
@@ -97,10 +97,10 @@ router.get("/getrecommended",verifyToken,GetRecommendedUser);
 // update user Role
 router.patch("/updaterole",verifyToken,UpdateRole);
 
-router.post("/qrcode",QrCode);
-router.post("/qrcoderead",uploads.array("images",10),QrCodeRead);
+// router.post("/qrcode",QrCode);
+// router.post("/qrcoderead",uploads.array("images",10),QrCodeRead);
 
-router.delete("/deleteuser/:id",verifyToken,DelUser);
+// router.delete("/deleteuser/:id",verifyToken,DelUser);
 
 // Mutual Following
 router.get("/mutualfollowed/:id",verifyToken,GetMutualFollowingUser);
